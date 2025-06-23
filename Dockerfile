@@ -1,4 +1,4 @@
-FROM node:19-alpine3.16
+FROM node:lts-alpine
 
 LABEL com.centurylinklabs.watchtower.enable=true
 ENV DEBUG=tinfoil*
@@ -13,12 +13,21 @@ ENV NX_PORTS=5000
 RUN mkdir -p /games
 
 # Copy the package.json and package-lock.json
+# It's good practice to copy these first to leverage Docker's build cache
+# If package.json or package-lock.json don't change, this layer won't rebuild
 COPY package*.json /
-# Install the app dependencies
+
+# Set the working directory to the root of the container
 WORKDIR /
-RUN npm install --production
+
+# Install the app dependencies using npm ci for a clean, reproducible build
+# npm ci uses the package-lock.json file to install exact versions,
+# which is ideal for CI/CD and Docker builds.
+# The --production flag ensures only production dependencies are installed.
+RUN npm ci --production
 
 # Copy the application code
+# This step should be after npm ci to ensure node_modules are built based on lockfile
 COPY . /
 
 # Expose the app TINFOIL_HAT_PORT
