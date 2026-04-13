@@ -22,8 +22,24 @@ test.describe('Roms and homebrews listing', () => {
         ],
         "success": "The Server Works!!"
       })
+  });
 
-    // Expect a title "to contain" a substring.
+  test('Files are sorted by Title ID (base game before updates/DLC)', async ({ nxPage }) => {
+    const response = await nxPage.request.get(`/shop.json`);
+    expect(response.ok()).toBeTruthy();
+    const { files } = await response.json();
+
+    const titleIdPattern = /\[([0-9A-Fa-f]{16})\]/;
+    const titleIds = files
+      .map((f: { url: string }) => {
+        const decoded = decodeURIComponent(f.url);
+        const match = decoded.match(titleIdPattern);
+        return match ? match[1].toUpperCase() : null;
+      })
+      .filter(Boolean);
+
+    const sorted = [...titleIds].sort((a: string, b: string) => a.localeCompare(b));
+    expect(titleIds).toEqual(sorted);
   });
 
 })
