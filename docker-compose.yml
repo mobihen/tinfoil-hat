@@ -5,8 +5,7 @@ services:
       # same scop used by watchtower to self update image
       - "com.centurylinklabs.watchtower.scope=tinfoilhat"
     container_name: tinfoil-hat
-    build: .
-    image: vinicioslc/tinfoil-hat:latest
+    image: mobihen/mobihen-eshop:latest
     hostname: tinfoil-hat
     environment:
       - DEBUG=*
