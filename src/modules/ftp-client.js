@@ -1,6 +1,5 @@
 import path from "path";
 
-import ipSearch from "./ip-search.js";
 import { savesDirPath } from "../helpers/envs.js";
 import ftp from "basic-ftp";
 import debug from "../debug.js";

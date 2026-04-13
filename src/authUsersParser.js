@@ -1,5 +1,3 @@
-import _ from "lodash";
-
 import { authUsers } from "./helpers/envs.js";
 import debug from "./debug.js";
 
@@ -9,7 +7,7 @@ function parseUserString(authString) {
 
 export function getUsersFromEnv() {
   let parsedUsers = null;
-  if (!_.isNil(authUsers?.length)) {
+  if (authUsers?.length != null) {
     if (authUsers.includes(",") && authUsers.includes(":")) {
       if (authUsers.split(",").length > 0) {
         parsedUsers = authUsers
@@ -28,7 +26,7 @@ export function getUsersFromEnv() {
     if (parsedUsers?.length) {
       // transform this [ { name: admin, pass: 123 } ] to this -> { admin: 123 }
       parsedUsers = parsedUsers.reduce(function (accumulator, user) {
-        return _.merge(accumulator ?? {}, { [user.name]: user.pass });
+        return Object.assign(accumulator ?? {}, { [user.name]: user.pass });
       }, {});
     }
   }
