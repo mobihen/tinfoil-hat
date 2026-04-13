@@ -14,6 +14,25 @@ const validExtensions = ["nsp", "nsz", "xci", "zip"].map(
   (value) => `**.${value.replace(".", "")}`
 );
 
+// Extracts the 16-character hex Title ID from a filename.
+// e.g. "Game Name [010010401BC1A000][v0] (0.39 GB).nsz" → "010010401BC1A000"
+// Returns null if no Title ID is found.
+function extractTitleId(filePath) {
+  const filename = path.basename(filePath);
+  const match = filename.match(/\[([0-9A-Fa-f]{16})\]/);
+  return match ? match[1].toUpperCase() : null;
+}
+
+// Sorts files by Title ID so base game, updates and DLC appear grouped together.
+// Files without a Title ID are placed at the end.
+function sortByTitleId(files) {
+  return [...files].sort((a, b) => {
+    const idA = extractTitleId(a.url) ?? "\xFF";
+    const idB = extractTitleId(b.url) ?? "\xFF";
+    return idA.localeCompare(idB);
+  });
+}
+
 export default async () => {
 
   const jsonTemplate = getJsonTemplateFile();
@@ -40,9 +59,11 @@ export default async () => {
       jsonTemplate.success = welcomeMessage;
     }
   }
-  files = (await Promise.all(files.map(addFileInfoToPath)))
-    .map(encodeURL)
-    .map(addRelativeStartPath);
+  files = sortByTitleId(
+    (await Promise.all(files.map(addFileInfoToPath)))
+      .map(encodeURL)
+      .map(addRelativeStartPath)
+  );
 
   directories = directories
     .map((file) => {
