@@ -3,7 +3,7 @@ import path from "path";
 import { mkdirSync, existsSync, createReadStream, writeFileSync, readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import FastGlob from "fast-glob";
-import { romsDirPath, titledbPath } from "../helpers/envs.js";
+import { romsDirPath, titledbPath, coversDirPath } from "../helpers/envs.js";
 import { extractTitleId } from "../helpers/helpers.js";
 import { getAll, upsert, remove } from "../modules/titledb-store.js";
 
@@ -17,13 +17,41 @@ const validExtensions = ["nsp", "nsz", "xci", "zip"].map(
   (v) => `**.${v}`
 );
 
-// Cover image cache — sibling directory next to titledb.json
-const coversDir = path.join(path.dirname(titledbPath), "covers");
+// Cover image cache
+const coversDir = coversDirPath;
 mkdirSync(coversDir, { recursive: true });
 
-// Normalize any Title ID to its base-game ID (last 3 hex chars → 000)
-function toBaseId(titleId) {
-  return titleId.slice(0, -3).toUpperCase() + "000";
+// Normalize any Title ID to its base-game ID (using Switch title ID bitmask)
+export function toBaseId(titleId) {
+  try {
+    return (BigInt("0x" + titleId) & 0xFFFFFFFFFFFFE000n).toString(16).toUpperCase().padStart(16, "0");
+  } catch {
+    return titleId.slice(0, -3).toUpperCase() + "000";
+  }
+}
+
+// Background method to download cover missing on disk
+export async function downloadMissingCover(baseId) {
+  if (!TITLE_ID_RE.test(baseId)) return;
+  const cachePath = path.join(coversDir, `${baseId}.jpg`);
+  if (existsSync(cachePath)) return;
+
+  try {
+    const ctrl     = new AbortController();
+    const timeout  = setTimeout(() => ctrl.abort(), 10_000);
+    const upstream = await fetch(
+      `https://tinfoil.media/ti/${baseId}/240/240`,
+      { signal: ctrl.signal, headers: { "User-Agent": "tinfoil-hat-server" } }
+    );
+    clearTimeout(timeout);
+
+    if (upstream.ok) {
+      const buf = Buffer.from(await upstream.arrayBuffer());
+      writeFileSync(cachePath, buf);
+    }
+  } catch (err) {
+    // suppress connection errors during background logic
+  }
 }
 
 // ─── REST API ────────────────────────────────────────────────────────────────
@@ -62,31 +90,14 @@ router.get("/api/titledb/cover/:titleId", async (req, res) => {
   const baseId    = toBaseId(titleId);
   const cachePath = path.join(coversDir, `${baseId}.jpg`);
 
+  await downloadMissingCover(baseId);
+
   if (existsSync(cachePath)) {
     res.setHeader("Content-Type", "image/jpeg");
     res.setHeader("Cache-Control", "public, max-age=86400");
     return createReadStream(cachePath).pipe(res);
   }
-
-  try {
-    const ctrl     = new AbortController();
-    const timeout  = setTimeout(() => ctrl.abort(), 10_000);
-    const upstream = await fetch(
-      `https://tinfoil.media/ti/${baseId}/240/240`,
-      { signal: ctrl.signal, headers: { "User-Agent": "tinfoil-hat-server" } }
-    );
-    clearTimeout(timeout);
-
-    if (!upstream.ok) return res.sendStatus(404);
-
-    const buf = Buffer.from(await upstream.arrayBuffer());
-    writeFileSync(cachePath, buf);
-    res.setHeader("Content-Type", upstream.headers.get("content-type") || "image/jpeg");
-    res.setHeader("Cache-Control", "public, max-age=86400");
-    res.send(buf);
-  } catch {
-    res.sendStatus(404);
-  }
+  return res.sendStatus(404);
 });
 
 router.put("/api/titledb/:titleId", (req, res) => {

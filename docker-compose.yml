@@ -17,6 +17,7 @@ services:
       - UNAUTHORIZED_MSG='No tricks and treats for you!!'
       - WELCOME_MSG='The Server Just Works!!'
       - NX_PORTS=5000 # ftp port used to sync saves
+      # - COVERS_PATH=/games/covers # custom path for cached title images
       # - UNAUTHORIZED_MSG= # message shown when credentials are incorrect
       # - NX_IPS= # devices ips that will be saves sync separated by ";"
       # - SAVE_SYNC_INTERVAL= # interval in millisseconds that will try sync saves < 5000 will stop sync
@@ -31,7 +32,7 @@ services:
       # path to your custom shop_template.jsonc used to show message on success or add authentication
       - ./shop_template.jsonc:/shop_template.jsonc
       # path to your directory with games
-      - c:/Users/vinic/Downloads/FDM/Switch/:/games/
+      - /mnt/mobimedia2t/shop/games:/games/
   # to enable auto update of tinfoil-hat container
   tinfoilhat-updater:
     image: containrrr/watchtower:latest

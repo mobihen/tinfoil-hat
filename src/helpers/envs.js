@@ -25,6 +25,9 @@ const titledbPath = path.resolve(
     path.join(fileDirName(import.meta).__dirname, "../../titledb.json")
 );
 
+const coversPath = process?.env?.COVERS_PATH ?? path.join(romsPath, "covers");
+const coversDirPath = path.resolve(coversPath);
+
 const appPort = process?.env?.TINFOIL_HAT_PORT ?? "80"; // default listen port
 
 const authUsers = process?.env?.AUTH_USERS ?? null; // default listen port
@@ -37,6 +40,7 @@ export {
   romsDirPath,
   jsonTemplatePath,
   titledbPath,
+  coversDirPath,
   appPort,
   authUsers,
   unauthorizedMessage,

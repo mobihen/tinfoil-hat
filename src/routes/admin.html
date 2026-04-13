@@ -9,12 +9,12 @@
 <style>
 /* ── Material Design 3 tokens ── */
 :root {
-  --md-primary:       #6750A4;
+  --md-primary:       #7B1FA2;
   --md-on-primary:    #FFFFFF;
-  --md-primary-cont:  #EADDFF;
+  --md-primary-cont:  #F3E5F5;
   --md-secondary:     #625B71;
-  --md-surface:       #FFFBFE;
-  --md-surface-var:   #E7E0EC;
+  --md-surface:       #FAFAFA;
+  --md-surface-var:   #ECEFF1;
   --md-on-surface:    #1C1B1F;
   --md-on-surf-var:   #49454F;
   --md-outline:       #79747E;
@@ -32,27 +32,28 @@ body{font-family:'Roboto',sans-serif;background:var(--md-surface);color:var(--md
 
 /* ── Top App Bar ── */
 .top-bar{
-  background:var(--md-primary);
+  background:linear-gradient(135deg, #4A148C, #7B1FA2);
   color:var(--md-on-primary);
   padding:0 1rem;
   height:64px;
   display:flex;align-items:center;gap:12px;
-  box-shadow:var(--md-elev2);
+  box-shadow:var(--md-elev3);
   position:sticky;top:0;z-index:50;
+  border-bottom:1px solid rgba(255,255,255,0.1);
 }
-.top-bar .material-icons-round{font-size:28px}
-.top-bar h1{font-size:1.25rem;font-weight:500;letter-spacing:.01em}
-.top-bar span{opacity:.7;font-size:.85rem;margin-left:.25rem}
+.top-bar .material-icons-round{font-size:28px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2))}
+.top-bar h1{font-size:1.35rem;font-weight:700;letter-spacing:.02em;}
+.top-bar span{opacity:.8;font-size:.9rem;margin-left:.25rem; font-weight: 300;}
 .top-bar .spacer{flex:1}
-.top-bar .icon-btn{background:none;border:none;color:inherit;cursor:pointer;border-radius:50%;padding:8px;display:flex;align-items:center;justify-content:center;transition:background .2s}
-.top-bar .icon-btn:hover{background:rgba(255,255,255,.12)}
+.top-bar .icon-btn{background:rgba(255,255,255,0.1);border:none;color:inherit;cursor:pointer;border-radius:50%;padding:8px;display:flex;align-items:center;justify-content:center;transition:all .3s cubic-bezier(0.25, 0.8, 0.25, 1)}
+.top-bar .icon-btn:hover{background:rgba(255,255,255,.2); transform: scale(1.1) rotate(15deg)}
 
 /* ── Tabs ── */
 .tab-bar{
-  background:var(--md-primary);
+  background:linear-gradient(135deg, #7B1FA2, #9C27B0);
   display:flex;
   padding:0 1rem;
-  border-top:1px solid rgba(255,255,255,.12);
+  box-shadow:var(--md-elev1);
 }
 .tab-btn{
   flex:1;max-width:240px;
@@ -82,11 +83,11 @@ body{font-family:'Roboto',sans-serif;background:var(--md-surface);color:var(--md
 .toolbar-left{display:flex;align-items:center;gap:.75rem}
 
 /* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:0 1.5rem;height:40px;border:none;border-radius:20px;cursor:pointer;font:500 .875rem 'Roboto',sans-serif;letter-spacing:.01em;transition:box-shadow .2s,background .2s}
-.btn-filled{background:var(--md-primary);color:var(--md-on-primary)}
-.btn-filled:hover{box-shadow:var(--md-elev1)}
-.btn-tonal{background:var(--md-primary-cont);color:var(--md-primary)}
-.btn-tonal:hover{box-shadow:var(--md-elev1)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:0 1.5rem;height:40px;border:none;border-radius:20px;cursor:pointer;font:500 .875rem 'Roboto',sans-serif;letter-spacing:.02em;transition:all .3s cubic-bezier(0.25,0.8,0.25,1);text-transform:uppercase}
+.btn-filled{background:linear-gradient(135deg, var(--md-primary), #9C27B0);color:var(--md-on-primary);box-shadow:var(--md-elev1)}
+.btn-filled:hover{box-shadow:var(--md-elev3);transform:translateY(-1px) scale(1.02)}
+.btn-tonal{background:var(--md-primary-cont);color:var(--md-primary);box-shadow:var(--md-elev1)}
+.btn-tonal:hover{box-shadow:var(--md-elev2);transform:translateY(-1px)}
 .btn-outlined{background:none;color:var(--md-primary);border:1px solid var(--md-outline);padding:0 1.25rem}
 .btn-outlined:hover{background:rgba(103,80,164,.08)}
 .btn-text{background:none;color:var(--md-primary);padding:0 .75rem}
@@ -96,20 +97,23 @@ body{font-family:'Roboto',sans-serif;background:var(--md-surface);color:var(--md
 .btn-icon.danger:hover{color:var(--md-error);background:rgba(179,38,30,.08)}
 .btn-sm{height:32px;padding:0 .75rem;font-size:.8rem}
 
-/* ── Cards Grid ── */
 .cards-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-  gap:1rem;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:1.25rem;
 }
 .game-card{
-  background:#fff;border-radius:12px;overflow:hidden;
-  box-shadow:var(--md-elev1);
+  background:#fff;border-radius:16px;overflow:hidden;
+  box-shadow:var(--md-elev2);
   display:flex;flex-direction:column;
-  cursor:pointer;transition:box-shadow .2s,transform .15s;
-  border:1px solid var(--md-outline-var);
+  cursor:pointer;transition:all .3s cubic-bezier(0.25,0.8,0.25,1);
+  border:1px solid transparent;
 }
-.game-card:hover{box-shadow:var(--md-elev3);transform:translateY(-2px)}
+.game-card:hover{
+  box-shadow:var(--md-elev3);
+  transform:translateY(-4px) scale(1.02);
+  border:1px solid var(--md-primary-cont);
+}
 .card-cover{
   width:100%;aspect-ratio:1;object-fit:cover;
   background:var(--md-surface-var);display:block;
@@ -336,6 +340,23 @@ body{font-family:'Roboto',sans-serif;background:var(--md-surface);color:var(--md
   </div>
 </div>
 
+<!-- Group Dialog -->
+<div class="scrim" id="scrim-group" onclick="if(event.target===this) this.classList.remove('open')">
+  <div class="dialog" id="dialog-group">
+    <img id="grp-cover" class="dialog-cover-bar hidden" src="" alt=""
+         onload="this.classList.remove('hidden')" onerror="this.classList.add('hidden')">
+    <div class="dialog-head">
+      <h2 id="grp-title">Game Details</h2>
+      <button class="btn-icon" onclick="document.getElementById('scrim-group').classList.remove('open')">
+        <span class="material-icons-round">close</span>
+      </button>
+    </div>
+    <div class="dialog-body" style="padding-bottom:1.5rem">
+      <div id="grp-list" class="md-list"></div>
+    </div>
+  </div>
+</div>
+
 <div class="snackbar" id="snackbar"></div>
 
 <script>
@@ -344,13 +365,22 @@ let detected  = [];
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const toBaseId = id => id.slice(0, -3).toUpperCase() + '000';
+const toBaseId = id => {
+  try {
+    return (BigInt("0x" + id) & 0xFFFFFFFFFFFFE000n).toString(16).toUpperCase().padStart(16, "0");
+  } catch {
+    return id.slice(0, -3).toUpperCase() + "000";
+  }
+};
 const coverSrc = id => '/api/titledb/cover/' + toBaseId(id);
 
 function gameType(titleId) {
-  const suffix = titleId.slice(-3).toUpperCase();
-  if (suffix === '000') return { label: 'Base', cls: 'chip-base' };
-  if (suffix === '800') return { label: 'Update', cls: 'chip-update' };
+  const base = toBaseId(titleId);
+  if (titleId === base) return { label: 'Base', cls: 'chip-base' };
+  try {
+    const updateId = (BigInt("0x" + base) | 0x800n).toString(16).toUpperCase().padStart(16, "0");
+    if (titleId === updateId) return { label: 'Update', cls: 'chip-update' };
+  } catch {}
   return { label: 'DLC', cls: 'chip-dlc' };
 }
 
@@ -389,21 +419,54 @@ function renderDetected() {
     return;
   }
 
-  const cards = detected.map(function({ titleId, filename }) {
-    const ov   = overrides[titleId];
-    const type = gameType(titleId);
-    const name = (ov && ov.name) || guessName(filename);
-    const ovBadge = ov
-      ? '<span class="card-chip chip-override"><span class="material-icons-round" style="font-size:12px">check_circle</span>Override</span>'
+  const groups = {};
+  detected.forEach(function(item) {
+    const baseId = toBaseId(item.titleId);
+    if (!groups[baseId]) groups[baseId] = [];
+    groups[baseId].push(item);
+  });
+
+  const cards = Object.keys(groups).sort().map(function(baseId) {
+    const items = groups[baseId];
+    
+    let name = '';
+    const baseItem = items.find(i => gameType(i.titleId).label === 'Base');
+    if (baseItem) {
+      const ov = overrides[baseItem.titleId];
+      name = (ov && ov.name) || guessName(baseItem.filename);
+    } else {
+      const ov = overrides[items[0].titleId];
+      name = (ov && ov.name) || guessName(items[0].filename);
+    }
+
+    const types = new Set();
+    let hasOverride = false;
+    items.forEach(function(i) {
+      types.add(gameType(i.titleId).label);
+      if (overrides[i.titleId]) hasOverride = true;
+    });
+
+    const ovBadge = hasOverride
+      ? '<span class="card-chip chip-override" style="margin-left:auto"><span class="material-icons-round" style="font-size:12px">check_circle</span>Override</span>'
       : '';
-    return '<div class="game-card" onclick="openDialog(\'' + titleId + '\',\'' + esc(filename) + '\')" title="' + esc(filename) + '">'
-      + '<img class="card-cover" data-src="' + coverSrc(titleId) + '" src="" alt=""'
+
+    const sortedTypes = ['Base', 'Update', 'DLC'].filter(t => types.has(t));
+    const typeChips = sortedTypes.map(function(t) {
+      const cls = t === 'Base' ? 'chip-base' : (t === 'Update' ? 'chip-update' : 'chip-dlc');
+      return '<span class="card-chip ' + cls + '">' + t + '</span>';
+    }).join('');
+
+    const rawData = JSON.stringify(items).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const escName = esc(name).replace(/'/g, "\\'");
+
+    return '<div class="game-card" onclick="openGroupDialog(\'' + baseId + '\',\'' + escName + '\', \'' + rawData + '\')">'
+      + '<img class="card-cover" src="' + coverSrc(baseId) + '" alt=""'
       + ' onerror="this.parentNode.insertAdjacentHTML(\'afterbegin\',placeholderSVG());this.remove()">'
       + '<div class="card-body">'
       + '<div class="card-title">' + esc(name) + '</div>'
-      + '<div class="card-id">' + titleId + '</div>'
-      + '<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:2px">'
-      + '<span class="card-chip ' + type.cls + '">' + type.label + '</span>'
+      + '<div class="card-id">' + baseId + '</div>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;align-items:center;">'
+      + typeChips
       + ovBadge
       + '</div>'
       + '</div>'
@@ -411,7 +474,41 @@ function renderDetected() {
   }).join('');
 
   setContent('detected-content', '<div class="cards-grid">' + cards + '</div>');
-  initLazyCovers();
+}
+
+function openGroupDialog(baseId, name, itemsJson) {
+  const items = JSON.parse(itemsJson);
+  const covEl = document.getElementById('grp-cover');
+  covEl.src = coverSrc(baseId);
+  covEl.classList.add('hidden');
+  document.getElementById('grp-title').textContent = name;
+
+  items.sort(function(a,b){
+    const wa = gameType(a.titleId).label === 'Base' ? 1 : (gameType(a.titleId).label === 'Update' ? 2 : 3);
+    const wb = gameType(b.titleId).label === 'Base' ? 1 : (gameType(b.titleId).label === 'Update' ? 2 : 3);
+    return wa - wb || a.titleId.localeCompare(b.titleId);
+  });
+
+  const listHtml = items.map(function(i) {
+    const t = gameType(i.titleId);
+    const ov = overrides[i.titleId];
+    const itemName = (ov && ov.name) || guessName(i.filename);
+    const itemEscName = itemName.replace(/'/g, "\\'");
+    return '<div class="list-item" style="cursor:pointer" onclick="document.getElementById(\'scrim-group\').classList.remove(\'open\'); openDialog(\'' + i.titleId + '\',\'' + itemEscName + '\')">'
+      + '<div class="list-main">'
+      + '<div class="list-title">' + esc(itemName) + '</div>'
+      + '<div class="list-sub">' + i.titleId + '</div>'
+      + '<div class="list-meta">'
+      + '<span class="card-chip ' + t.cls + '">' + t.label + '</span>'
+      + (ov ? '<span class="card-chip chip-override">Override</span>' : '')
+      + '</div>'
+      + '</div>'
+      + '<div class="list-actions"><span class="material-icons-round" style="color:var(--md-outline)">chevron_right</span></div>'
+      + '</div>';
+  }).join('');
+
+  document.getElementById('grp-list').innerHTML = listHtml;
+  document.getElementById('scrim-group').classList.add('open');
 }
 
 function renderOverrides() {
@@ -445,23 +542,6 @@ function renderOverrides() {
   }).join('');
 
   setContent('overrides-content', '<div class="md-list">' + items + '</div>');
-  initLazyCovers();
-}
-
-// ── lazy cover loading via IntersectionObserver ───────────────────────────────
-function initLazyCovers() {
-  const imgs = document.querySelectorAll('img[data-src]');
-  if (!imgs.length) return;
-  const obs = new IntersectionObserver(function(entries, o) {
-    entries.forEach(function(en) {
-      if (!en.isIntersecting) return;
-      const img = en.target;
-      img.src = img.dataset.src;
-      delete img.dataset.src;
-      o.unobserve(img);
-    });
-  }, { rootMargin: '200px' });
-  imgs.forEach(function(img) { obs.observe(img); });
 }
 
 // ── dialog ───────────────────────────────────────────────────────────────────
@@ -481,8 +561,9 @@ function openDialog(titleId, filename) {
 
   const fi = document.getElementById('f-id');
   fi.value = titleId || '';
-  fi.readOnly = !!titleId;
-  fi.style.opacity = titleId ? '.6' : '1';
+  fi.dataset.originalId = titleId || '';
+  fi.readOnly = false;
+  fi.style.opacity = '1';
 
   document.getElementById('f-name').value        = e.name        != null ? e.name        : guessed;
   document.getElementById('f-publisher').value   = e.publisher   != null ? e.publisher   : '';
@@ -521,6 +602,13 @@ async function saveEntry(ev) {
   Object.keys(body).forEach(function(k) { if (body[k] === undefined) delete body[k]; });
 
   try {
+    const origId = document.getElementById('f-id').dataset.originalId;
+    if (origId && origId !== id && overrides[origId]) {
+      // If we altered the Title ID, clean up the old override reference on the server first
+      await fetch('/api/titledb/' + origId, { method: 'DELETE' });
+      delete overrides[origId];
+    }
+
     const res = await fetch('/api/titledb/' + id, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

@@ -11,6 +11,7 @@ import {
   extractTitleId,
 } from "./helpers/helpers.js";
 import { getAll as getTitledbOverrides } from "./modules/titledb-store.js";
+import { downloadMissingCover, toBaseId } from "./routes/titledb-router.js";
 
 const validExtensions = ["nsp", "nsz", "xci", "zip"].map(
   (value) => `**.${value.replace(".", "")}`
@@ -75,6 +76,16 @@ export default async () => {
     jsonTemplate.titledb ?? {},
     getTitledbOverrides()
   );
+
+  // Background fetch of missing covers for all found titleIDs (to speed up admin panel later)
+  const allBaseIds = new Set();
+  for (const f of files) {
+    const tid = extractTitleId(f.url);
+    if (tid) allBaseIds.add(toBaseId(tid));
+  }
+  setTimeout(() => {
+    Promise.allSettled([...allBaseIds].map(id => downloadMissingCover(id)));
+  }, 100);
 
   return Object.assign(jsonTemplate, {
     files,
