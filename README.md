@@ -1,5 +1,7 @@
 # 📂 Tinfoil-Hat Server
 
+> Developed and maintained by **Mobihen**. (Formally built upon the great original work by [vinicioslc/tinfoil-hat](https://github.com/vinicioslc/tinfoil-hat)).
+
 [![Playwright Tests](https://github.com/vinicioslc/tinfoil-hat/actions/workflows/playwright.yml/badge.svg)](https://github.com/vinicioslc/tinfoil-hat/actions/workflows/playwright.yml)
 [![Docker Publish](https://github.com/vinicioslc/tinfoil-hat/actions/workflows/docker.yml/badge.svg)](https://github.com/vinicioslc/tinfoil-hat/actions/workflows/docker.yml)
 
@@ -9,10 +11,11 @@
 
 ## - Your NSP, XCI and other game files served locally
 
-With this server Tinfoil users can serve all .NSP .XCI files in local network with docker easily without file count limits !
+With this server Tinfoil users can serve all .NSP .XCI files in local network with docker easily without file count limits!
 
 ### Key Features
 
+- **Brand New Web Admin Panel** available at `/admin`! Visually manage Title ID dataset overrides, seamlessly auto-grouping Base Games over DLCs/Updates. Auto-downloads and caches box artwork locally!
 - Instant index refresh (no need waiting refresh interval, just put games into folder and reload window)
 - Multi user Authentication through user:pass,user2:pass2 ENV supplied as docker env
 - Customize Hello message and not logged in message throught ENVs
@@ -43,9 +46,28 @@ With this server Tinfoil users can serve all .NSP .XCI files in local network wi
 
 > R: To avoid a TINFOIL strange BUG when lists `shop.tfl` url. Basically when TINFOIL see too many folders on files index, home page (ex.: 100 folders links) TINFOIL can't traverse all html and reach `shop.tfl` file
 
+## Web Admin Panel
+
+Access **http://&lt;your-ip&gt;:&lt;port&gt;/admin** to open the new **TitleDB GUI**. 
+It visually scans your games directory, aggressively maps Base Titles across any related Updates and DLC files, and backgrounds all image caches from `tinfoil.media`. You can click on any game card graphically to manually edit its inner Name, Release Date, Regions, or anything else globally synced outwards immediately via standard `shop.json` serving!
+
 ## How works
 
 - Serve shop.json(for user check) and shop.tfl(for tinfoil) dynamically as you place new games and files on foilder (search files and folders at every refresh) this ensures a realtime Tinfoil listing files (you need reopen tinfoil to fully refresh index)
+
+## Available Environment Variables
+
+| Variable | Description | Default |
+| -------- | ----------- | ------- |
+| `ROMS_DIR_FULLPATH` | Absolute path mapping your Games folder. | `./games/` |
+| `SAVES_BACKUP_PATH` | Absolute path routing all JKSV/Tinfoil saves. | `<roms_path>/Saves/` |
+| `COVERS_PATH` | Cache location for box art assets. | `<roms_path>/covers/` |
+| `TITLEDB_PATH` | Absolute location for preserving manual metadata edits json. | `titledb.json` (ROOT) |
+| `JSON_TEMPLATE_PATH`| Absolute location pointing to the `shop_template.jsonc` logic payload. | `shop_template.jsonc` (ROOT) |
+| `TINFOIL_HAT_PORT` | Overrides the port the server natively listens to internally. | `80` |
+| `AUTH_USERS` | Comma-separated Tinfoil UserAuth tuples. Example: `admin:123,bob:456` | *None* |
+| `UNAUTHORIZED_MSG` | Formatted response alerting unauthed logins natively. | `"No tricks and treats for you!!"` |
+| `WELCOME_MSG` | General success message rendered on login inside tinfoil. | *None* |
 
 # Docker-Compose Sample Using Password
 
