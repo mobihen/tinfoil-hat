@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TitleDB Editor · TinfoilHat</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ── Material Design 3 tokens ── */
+:root {
+  --md-primary:       #6750A4;
+  --md-on-primary:    #FFFFFF;
+  --md-primary-cont:  #EADDFF;
+  --md-secondary:     #625B71;
+  --md-surface:       #FFFBFE;
+  --md-surface-var:   #E7E0EC;
+  --md-on-surface:    #1C1B1F;
+  --md-on-surf-var:   #49454F;
+  --md-outline:       #79747E;
+  --md-outline-var:   #CAC4D0;
+  --md-error:         #B3261E;
+  --md-error-cont:    #F9DEDC;
+  --md-shadow:        rgba(0,0,0,.15);
+  --md-scrim:         rgba(0,0,0,.4);
+  --md-elev1: 0 1px 2px var(--md-shadow),0 1px 3px 1px var(--md-shadow);
+  --md-elev2: 0 1px 2px var(--md-shadow),0 2px 6px 2px var(--md-shadow);
+  --md-elev3: 0 4px 8px 3px var(--md-shadow),0 1px 3px var(--md-shadow);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Roboto',sans-serif;background:var(--md-surface);color:var(--md-on-surface);min-height:100vh}
+
+/* ── Top App Bar ── */
+.top-bar{
+  background:var(--md-primary);
+  color:var(--md-on-primary);
+  padding:0 1rem;
+  height:64px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:var(--md-elev2);
+  position:sticky;top:0;z-index:50;
+}
+.top-bar .material-icons-round{font-size:28px}
+.top-bar h1{font-size:1.25rem;font-weight:500;letter-spacing:.01em}
+.top-bar span{opacity:.7;font-size:.85rem;margin-left:.25rem}
+.top-bar .spacer{flex:1}
+.top-bar .icon-btn{background:none;border:none;color:inherit;cursor:pointer;border-radius:50%;padding:8px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.top-bar .icon-btn:hover{background:rgba(255,255,255,.12)}
+
+/* ── Tabs ── */
+.tab-bar{
+  background:var(--md-primary);
+  display:flex;
+  padding:0 1rem;
+  border-top:1px solid rgba(255,255,255,.12);
+}
+.tab-btn{
+  flex:1;max-width:240px;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.7);
+  font:500 .875rem 'Roboto',sans-serif;
+  letter-spacing:.04em;text-transform:uppercase;
+  padding:.75rem 1rem;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  border-bottom:3px solid transparent;transition:all .2s;
+  position:relative;
+}
+.tab-btn.active{color:var(--md-on-primary);border-bottom-color:var(--md-on-primary)}
+.tab-btn:hover:not(.active){color:rgba(255,255,255,.9);background:rgba(255,255,255,.08)}
+.tab-count{
+  background:rgba(255,255,255,.25);border-radius:10px;
+  padding:.1rem .45rem;font-size:.7rem;
+}
+.tab-btn.active .tab-count{background:rgba(255,255,255,.35)}
+
+/* ── Content ── */
+.content{max-width:1280px;margin:0 auto;padding:1.5rem}
+.panel{display:none}.panel.active{display:block}
+
+/* ── Toolbar ── */
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem}
+.toolbar-left{display:flex;align-items:center;gap:.75rem}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:0 1.5rem;height:40px;border:none;border-radius:20px;cursor:pointer;font:500 .875rem 'Roboto',sans-serif;letter-spacing:.01em;transition:box-shadow .2s,background .2s}
+.btn-filled{background:var(--md-primary);color:var(--md-on-primary)}
+.btn-filled:hover{box-shadow:var(--md-elev1)}
+.btn-tonal{background:var(--md-primary-cont);color:var(--md-primary)}
+.btn-tonal:hover{box-shadow:var(--md-elev1)}
+.btn-outlined{background:none;color:var(--md-primary);border:1px solid var(--md-outline);padding:0 1.25rem}
+.btn-outlined:hover{background:rgba(103,80,164,.08)}
+.btn-text{background:none;color:var(--md-primary);padding:0 .75rem}
+.btn-text:hover{background:rgba(103,80,164,.08)}
+.btn-icon{background:none;border:none;cursor:pointer;border-radius:50%;padding:8px;display:flex;align-items:center;justify-content:center;color:var(--md-on-surf-var);transition:background .2s}
+.btn-icon:hover{background:rgba(0,0,0,.08)}
+.btn-icon.danger:hover{color:var(--md-error);background:rgba(179,38,30,.08)}
+.btn-sm{height:32px;padding:0 .75rem;font-size:.8rem}
+
+/* ── Cards Grid ── */
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:1rem;
+}
+.game-card{
+  background:#fff;border-radius:12px;overflow:hidden;
+  box-shadow:var(--md-elev1);
+  display:flex;flex-direction:column;
+  cursor:pointer;transition:box-shadow .2s,transform .15s;
+  border:1px solid var(--md-outline-var);
+}
+.game-card:hover{box-shadow:var(--md-elev3);transform:translateY(-2px)}
+.card-cover{
+  width:100%;aspect-ratio:1;object-fit:cover;
+  background:var(--md-surface-var);display:block;
+}
+.card-cover-placeholder{
+  width:100%;aspect-ratio:1;
+  background:var(--md-surface-var);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--md-outline);
+}
+.card-body{padding:.75rem;flex:1;display:flex;flex-direction:column;gap:.35rem}
+.card-title{font-size:.8rem;font-weight:500;color:var(--md-on-surface);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card-id{font-family:monospace;font-size:.7rem;color:var(--md-outline);background:var(--md-surface-var);padding:.1rem .35rem;border-radius:4px;width:fit-content}
+.card-chip{display:inline-flex;align-items:center;gap:4px;padding:.1rem .5rem;border-radius:8px;font-size:.7rem;font-weight:500}
+.chip-override{background:#E6F4EA;color:#1E7E34}
+.chip-base{background:var(--md-primary-cont);color:var(--md-primary)}
+.chip-dlc{background:#FFF3E0;color:#E65100}
+.chip-update{background:#E3F2FD;color:#0D47A1}
+.card-footer{padding:.5rem .75rem;border-top:1px solid var(--md-outline-var);display:flex;justify-content:flex-end}
+
+/* ── List (Overrides tab) ── */
+.md-list{background:#fff;border-radius:12px;box-shadow:var(--md-elev1);overflow:hidden;border:1px solid var(--md-outline-var)}
+.list-item{display:flex;align-items:center;gap:1rem;padding:.75rem 1rem;border-bottom:1px solid var(--md-outline-var)}
+.list-item:last-child{border-bottom:none}
+.list-item:hover{background:rgba(103,80,164,.04)}
+.list-cover{width:48px;height:48px;object-fit:cover;border-radius:8px;background:var(--md-surface-var);flex-shrink:0}
+.list-main{flex:1;min-width:0}
+.list-title{font-size:.875rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list-sub{font-size:.78rem;color:var(--md-on-surf-var);font-family:monospace}
+.list-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.list-meta{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.25rem}
+
+/* ── Empty / Loading ── */
+.state-card{background:#fff;border-radius:12px;box-shadow:var(--md-elev1);padding:3rem 1.5rem;text-align:center;color:var(--md-outline)}
+.state-card .material-icons-round{font-size:3rem;opacity:.4;margin-bottom:.75rem}
+.state-card p{font-size:.9rem}
+
+/* ── Spinner ── */
+.spinner-wrap{display:flex;flex-direction:column;align-items:center;gap:1rem;padding:3rem;color:var(--md-outline)}
+.md-spinner{width:48px;height:48px;border:4px solid var(--md-outline-var);border-top-color:var(--md-primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Dialog ── */
+.scrim{display:none;position:fixed;inset:0;background:var(--md-scrim);z-index:100;align-items:center;justify-content:center}
+.scrim.open{display:flex}
+.dialog{background:#fff;border-radius:28px;width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 6px 24px rgba(0,0,0,.25);display:flex;flex-direction:column}
+.dialog-cover-bar{
+  width:100%;height:180px;object-fit:cover;object-position:center;
+  background:var(--md-surface-var);flex-shrink:0;border-radius:28px 28px 0 0;
+  display:block;
+}
+.dialog-cover-bar.hidden{height:64px}
+.dialog-head{padding:1.25rem 1.5rem .5rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.dialog-head h2{font-size:1.25rem;font-weight:500;line-height:1.3}
+.dialog-head .btn-icon{flex-shrink:0}
+.dialog-body{padding:.5rem 1.5rem 1rem;overflow-y:auto}
+.dialog-actions{padding:.75rem 1.5rem 1.25rem;display:flex;justify-content:flex-end;gap:.5rem}
+
+/* ── Text Fields ── */
+.field{margin-bottom:1rem;position:relative}
+.field label{display:block;font-size:.78rem;font-weight:500;color:var(--md-primary);margin-bottom:.3rem}
+.field input,.field textarea,.field select{
+  width:100%;padding:.6rem .85rem;
+  background:var(--md-surface-var);
+  border:none;border-bottom:2px solid var(--md-outline);
+  border-radius:4px 4px 0 0;
+  font:400 .875rem 'Roboto',sans-serif;color:var(--md-on-surface);
+  outline:none;transition:border-color .2s;
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-bottom-color:var(--md-primary)}
+.field textarea{resize:vertical;min-height:72px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+
+/* ── Snackbar ── */
+.snackbar{
+  position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#323232;color:#fff;padding:.75rem 1.25rem;border-radius:4px;
+  font-size:.875rem;box-shadow:var(--md-elev3);
+  transition:transform .3s cubic-bezier(.25,.8,.25,1);
+  pointer-events:none;z-index:200;white-space:nowrap;
+}
+.snackbar.show{transform:translateX(-50%) translateY(0)}
+.snackbar.error{background:var(--md-error)}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem}
+  .dialog{width:100%;max-height:95vh;border-radius:28px 28px 0 0;margin-top:auto}
+  .scrim{align-items:flex-end}
+  .grid2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <span class="material-icons-round">deployed_code</span>
+  <h1>TinfoilHat</h1>
+  <span>TitleDB Editor</span>
+  <div class="spacer"></div>
+  <button class="icon-btn" title="Refresh" onclick="loadData()">
+    <span class="material-icons-round">refresh</span>
+  </button>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" id="tab-detected" onclick="showTab('detected')">
+    <span class="material-icons-round">sports_esports</span>
+    Detected Games
+    <span class="tab-count" id="count-detected">—</span>
+  </button>
+  <button class="tab-btn" id="tab-overrides" onclick="showTab('overrides')">
+    <span class="material-icons-round">tune</span>
+    Overrides
+    <span class="tab-count" id="count-overrides">—</span>
+  </button>
+</div>
+
+<div class="content">
+
+  <!-- Detected Games -->
+  <div id="panel-detected" class="panel active">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span class="material-icons-round" style="color:var(--md-on-surf-var)">grid_view</span>
+        <span style="font-size:.9rem;color:var(--md-on-surf-var)">Click a card to add or edit its metadata</span>
+      </div>
+    </div>
+    <div id="detected-content">
+      <div class="state-card"><div class="spinner-wrap"><div class="md-spinner"></div><p>Scanning library&hellip;</p></div></div>
+    </div>
+  </div>
+
+  <!-- Overrides -->
+  <div id="panel-overrides" class="panel">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span class="material-icons-round" style="color:var(--md-on-surf-var)">edit_note</span>
+        <span style="font-size:.9rem;color:var(--md-on-surf-var)">Metadata served to Tinfoil inside shop.json</span>
+      </div>
+      <button class="btn btn-filled btn-sm" onclick="openDialog(null)">
+        <span class="material-icons-round" style="font-size:18px">add</span>Add Override
+      </button>
+    </div>
+    <div id="overrides-content">
+      <div class="state-card"><div class="spinner-wrap"><div class="md-spinner"></div><p>Loading&hellip;</p></div></div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- Dialog -->
+<div class="scrim" id="scrim" onclick="handleScrimClick(event)">
+  <div class="dialog" id="dialog">
+    <img id="dlg-cover" class="dialog-cover-bar hidden" src="" alt=""
+         onload="this.classList.remove('hidden')" onerror="this.classList.add('hidden')">
+    <div class="dialog-head">
+      <h2 id="dlg-title">Edit Override</h2>
+      <button class="btn-icon" onclick="closeDialog()">
+        <span class="material-icons-round">close</span>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <form id="dlg-form" onsubmit="saveEntry(event)">
+        <div class="field">
+          <label>Title ID *</label>
+          <input id="f-id" required pattern="[0-9A-Fa-f]{16}" maxlength="16"
+                 placeholder="010010401BC1A000" autocomplete="off"
+                 style="font-family:monospace;letter-spacing:.08em">
+        </div>
+        <div class="field">
+          <label>Name</label>
+          <input id="f-name" placeholder="Game display name">
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>Publisher</label>
+            <input id="f-publisher" placeholder="Publisher / developer">
+          </div>
+          <div class="field">
+            <label>Region</label>
+            <select id="f-region">
+              <option value="">— Any —</option>
+              <option>US</option><option>EU</option><option>JP</option>
+              <option>CN</option><option>KR</option><option>TW</option><option>HK</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Version</label>
+            <input id="f-version" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label>Release Date (YYYYMMDD)</label>
+            <input id="f-releaseDate" type="number" placeholder="20180801">
+          </div>
+          <div class="field">
+            <label>Rating</label>
+            <select id="f-rating">
+              <option value="">— Unknown —</option>
+              <option value="3">3 &middot; Early Childhood</option>
+              <option value="6">6 &middot; Everyone</option>
+              <option value="10">10 &middot; Everyone 10+</option>
+              <option value="13">13 &middot; Teen</option>
+              <option value="18">18 &middot; Mature</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Size (bytes)</label>
+            <input id="f-size" type="number" min="0" placeholder="auto from file">
+          </div>
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea id="f-description" placeholder="Short description shown in Tinfoil"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-text" onclick="closeDialog()">Cancel</button>
+      <button class="btn btn-filled" onclick="document.getElementById('dlg-form').requestSubmit()">
+        <span class="material-icons-round" style="font-size:18px">save</span>Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="snackbar" id="snackbar"></div>
+
+<script>
+let overrides = {};
+let detected  = [];
+
+// ── helpers ──────────────────────────────────────────────────────────────────
+const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const toBaseId = id => id.slice(0, -3).toUpperCase() + '000';
+const coverSrc = id => '/api/titledb/cover/' + toBaseId(id);
+
+function gameType(titleId) {
+  const suffix = titleId.slice(-3).toUpperCase();
+  if (suffix === '000') return { label: 'Base', cls: 'chip-base' };
+  if (suffix === '800') return { label: 'Update', cls: 'chip-update' };
+  return { label: 'DLC', cls: 'chip-dlc' };
+}
+
+function guessName(filename) {
+  return filename.replace(/\[.*$/, '').trim();
+}
+
+// ── data loading ─────────────────────────────────────────────────────────────
+async function loadData() {
+  setContent('detected-content', spinnerHTML('Scanning library\u2026'));
+  setContent('overrides-content', spinnerHTML('Loading\u2026'));
+
+  try {
+    [overrides, detected] = await Promise.all([
+      fetch('/api/titledb').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+      fetch('/api/titledb/games').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+    ]);
+  } catch (err) {
+    const msg = 'Failed to load data: ' + err.message;
+    setContent('detected-content', errorHTML(msg));
+    setContent('overrides-content', errorHTML(msg));
+    snack(msg, true);
+    return;
+  }
+
+  document.getElementById('count-detected').textContent = detected.length;
+  document.getElementById('count-overrides').textContent = Object.keys(overrides).length;
+  renderDetected();
+  renderOverrides();
+}
+
+// ── rendering ────────────────────────────────────────────────────────────────
+function renderDetected() {
+  if (!detected.length) {
+    setContent('detected-content', emptyHTML('No game files found in the library folder.'));
+    return;
+  }
+
+  const cards = detected.map(function({ titleId, filename }) {
+    const ov   = overrides[titleId];
+    const type = gameType(titleId);
+    const name = (ov && ov.name) || guessName(filename);
+    const ovBadge = ov
+      ? '<span class="card-chip chip-override"><span class="material-icons-round" style="font-size:12px">check_circle</span>Override</span>'
+      : '';
+    return '<div class="game-card" onclick="openDialog(\'' + titleId + '\',\'' + esc(filename) + '\')" title="' + esc(filename) + '">'
+      + '<img class="card-cover" data-src="' + coverSrc(titleId) + '" src="" alt=""'
+      + ' onerror="this.parentNode.insertAdjacentHTML(\'afterbegin\',placeholderSVG());this.remove()">'
+      + '<div class="card-body">'
+      + '<div class="card-title">' + esc(name) + '</div>'
+      + '<div class="card-id">' + titleId + '</div>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:2px">'
+      + '<span class="card-chip ' + type.cls + '">' + type.label + '</span>'
+      + ovBadge
+      + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  setContent('detected-content', '<div class="cards-grid">' + cards + '</div>');
+  initLazyCovers();
+}
+
+function renderOverrides() {
+  const entries = Object.values(overrides).sort((a, b) => a.id.localeCompare(b.id));
+  document.getElementById('count-overrides').textContent = entries.length;
+
+  if (!entries.length) {
+    setContent('overrides-content', emptyHTML('No overrides yet. Click a card in Detected Games to add one.'));
+    return;
+  }
+
+  const items = entries.map(function(e) {
+    return '<div class="list-item">'
+      + '<img class="list-cover" data-src="' + coverSrc(e.id) + '" src="" alt=""'
+      + ' onerror="this.style.background=\'var(--md-surface-var)\'">'
+      + '<div class="list-main">'
+      + '<div class="list-title">' + esc(e.name || e.id) + '</div>'
+      + '<div class="list-sub">' + e.id + '</div>'
+      + '<div class="list-meta">'
+      + (e.publisher ? '<span class="card-chip chip-base">' + esc(e.publisher) + '</span>' : '')
+      + (e.region    ? '<span class="card-chip chip-update">' + esc(e.region) + '</span>' : '')
+      + '</div>'
+      + '</div>'
+      + '<div class="list-actions">'
+      + '<button class="btn-icon" title="Edit" onclick="openDialog(\'' + e.id + '\')">'
+      + '<span class="material-icons-round">edit</span></button>'
+      + '<button class="btn-icon danger" title="Delete" onclick="deleteEntry(\'' + e.id + '\')">'
+      + '<span class="material-icons-round">delete</span></button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  setContent('overrides-content', '<div class="md-list">' + items + '</div>');
+  initLazyCovers();
+}
+
+// ── lazy cover loading via IntersectionObserver ───────────────────────────────
+function initLazyCovers() {
+  const imgs = document.querySelectorAll('img[data-src]');
+  if (!imgs.length) return;
+  const obs = new IntersectionObserver(function(entries, o) {
+    entries.forEach(function(en) {
+      if (!en.isIntersecting) return;
+      const img = en.target;
+      img.src = img.dataset.src;
+      delete img.dataset.src;
+      o.unobserve(img);
+    });
+  }, { rootMargin: '200px' });
+  imgs.forEach(function(img) { obs.observe(img); });
+}
+
+// ── dialog ───────────────────────────────────────────────────────────────────
+function openDialog(titleId, filename) {
+  const e = overrides[titleId] || {};
+  const guessed = filename ? guessName(filename) : '';
+
+  document.getElementById('dlg-title').textContent = titleId ? 'Edit \u00B7 ' + titleId : 'New Override';
+  const covEl = document.getElementById('dlg-cover');
+  if (titleId) {
+    covEl.src = coverSrc(titleId);
+    covEl.classList.add('hidden');
+  } else {
+    covEl.src = '';
+    covEl.classList.add('hidden');
+  }
+
+  const fi = document.getElementById('f-id');
+  fi.value = titleId || '';
+  fi.readOnly = !!titleId;
+  fi.style.opacity = titleId ? '.6' : '1';
+
+  document.getElementById('f-name').value        = e.name        != null ? e.name        : guessed;
+  document.getElementById('f-publisher').value   = e.publisher   != null ? e.publisher   : '';
+  document.getElementById('f-region').value      = e.region      != null ? e.region      : '';
+  document.getElementById('f-version').value     = e.version     != null ? e.version     : 0;
+  document.getElementById('f-releaseDate').value = e.releaseDate != null ? e.releaseDate : '';
+  document.getElementById('f-rating').value      = e.rating      != null ? e.rating      : '';
+  document.getElementById('f-size').value        = e.size        != null ? e.size        : '';
+  document.getElementById('f-description').value = e.description != null ? e.description : '';
+
+  document.getElementById('scrim').classList.add('open');
+  setTimeout(function() { document.getElementById('f-name').focus(); }, 80);
+}
+
+function closeDialog() {
+  document.getElementById('scrim').classList.remove('open');
+}
+
+function handleScrimClick(e) {
+  if (e.target === document.getElementById('scrim')) closeDialog();
+}
+
+async function saveEntry(ev) {
+  ev.preventDefault();
+  const id = document.getElementById('f-id').value.toUpperCase();
+  const body = {
+    name:        document.getElementById('f-name').value        || undefined,
+    publisher:   document.getElementById('f-publisher').value   || undefined,
+    region:      document.getElementById('f-region').value      || undefined,
+    version:     toNum(document.getElementById('f-version').value),
+    releaseDate: toNum(document.getElementById('f-releaseDate').value),
+    rating:      toNum(document.getElementById('f-rating').value),
+    size:        toNum(document.getElementById('f-size').value),
+    description: document.getElementById('f-description').value || undefined,
+  };
+  Object.keys(body).forEach(function(k) { if (body[k] === undefined) delete body[k]; });
+
+  try {
+    const res = await fetch('/api/titledb/' + id, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    overrides[id] = await res.json();
+    closeDialog();
+    renderDetected();
+    renderOverrides();
+    snack('Saved successfully');
+  } catch (err) {
+    snack('Save failed: ' + err.message, true);
+  }
+}
+
+async function deleteEntry(titleId) {
+  if (!confirm('Delete override for ' + titleId + '?')) return;
+  try {
+    const res = await fetch('/api/titledb/' + titleId, { method: 'DELETE' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    delete overrides[titleId];
+    renderDetected();
+    renderOverrides();
+    snack('Override deleted');
+  } catch (err) {
+    snack('Delete failed: ' + err.message, true);
+  }
+}
+
+// ── tabs ─────────────────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('panel-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── snackbar ─────────────────────────────────────────────────────────────────
+let snackTimer;
+function snack(msg, err) {
+  const el = document.getElementById('snackbar');
+  el.textContent = msg;
+  el.className = 'snackbar' + (err ? ' error' : '') + ' show';
+  clearTimeout(snackTimer);
+  snackTimer = setTimeout(function() { el.classList.remove('show'); }, 3000);
+}
+
+// ── utility HTML ─────────────────────────────────────────────────────────────
+function spinnerHTML(msg) {
+  return '<div class="state-card"><div class="spinner-wrap"><div class="md-spinner"></div><p>' + esc(msg) + '</p></div></div>';
+}
+
+function emptyHTML(msg) {
+  return '<div class="state-card">'
+    + '<span class="material-icons-round">inbox</span>'
+    + '<p>' + esc(msg) + '</p>'
+    + '</div>';
+}
+
+function errorHTML(msg) {
+  return '<div class="state-card">'
+    + '<span class="material-icons-round" style="color:var(--md-error)">error_outline</span>'
+    + '<p style="color:var(--md-error)">' + esc(msg) + '</p>'
+    + '<button class="btn btn-tonal" style="margin-top:1rem" onclick="loadData()">Retry</button>'
+    + '</div>';
+}
+
+function placeholderSVG() {
+  return '<div class="card-cover-placeholder"><span class="material-icons-round" style="font-size:40px">videogame_asset</span></div>';
+}
+
+function setContent(id, html) {
+  document.getElementById(id).innerHTML = html;
+}
+
+function toNum(v) { const n = Number(v); return (v !== '' && !isNaN(n)) ? n : undefined; }
+
+// ── init ─────────────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
