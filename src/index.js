@@ -8,6 +8,7 @@ import { afterStartFunction } from "./afterStartFunction.js";
 import { getUsersFromEnv } from "./authUsersParser.js";
 import SaveSyncManager from "./modules/ftp-client.js";
 import staticIndexHTML from "./staticIndexHTML.js";
+import titledbRouter from "./routes/titledb-router.js";
 
 
 const saveSyncManager = new SaveSyncManager();
@@ -24,6 +25,8 @@ if (BasicAuthUsers) {
   );
 }
 
+expressApp.use(express.json());
+expressApp.use(titledbRouter);
 expressApp.use(shopFileBuilder(saveSyncManager));
 
 expressApp.use(express.static(path.join(romsDirPath)));

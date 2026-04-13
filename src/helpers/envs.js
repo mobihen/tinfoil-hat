@@ -19,6 +19,12 @@ const jsonTemplatePath = path.resolve(
     path.join(fileDirName(import.meta).__dirname, "../../shop_template.jsonc")
 );
 
+// Path to the server-side titledb overrides JSON file
+const titledbPath = path.resolve(
+  process?.env?.TITLEDB_PATH ??
+    path.join(fileDirName(import.meta).__dirname, "../../titledb.json")
+);
+
 const appPort = process?.env?.TINFOIL_HAT_PORT ?? "80"; // default listen port
 
 const authUsers = process?.env?.AUTH_USERS ?? null; // default listen port
@@ -29,7 +35,8 @@ const welcomeMessage = process?.env?.WELCOME_MSG ?? null;
 export {
   savesDirPath,
   romsDirPath,
-  jsonTemplatePath, // default json template path
+  jsonTemplatePath,
+  titledbPath,
   appPort,
   authUsers,
   unauthorizedMessage,

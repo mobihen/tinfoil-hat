@@ -8,11 +8,23 @@ import {
   addRelativeStartPath,
   getJsonTemplateFile,
   addUrlEncodedFileInfo as encodeURL,
+  extractTitleId,
 } from "./helpers/helpers.js";
+import { getAll as getTitledbOverrides } from "./modules/titledb-store.js";
 
 const validExtensions = ["nsp", "nsz", "xci", "zip"].map(
   (value) => `**.${value.replace(".", "")}`
 );
+
+// Sorts files by Title ID so base game, updates and DLC appear grouped together.
+// Files without a Title ID are placed at the end.
+function sortByTitleId(files) {
+  return [...files].sort((a, b) => {
+    const idA = extractTitleId(a.url) ?? "\xFF";
+    const idB = extractTitleId(b.url) ?? "\xFF";
+    return idA.localeCompare(idB);
+  });
+}
 
 export default async () => {
 
@@ -40,9 +52,12 @@ export default async () => {
       jsonTemplate.success = welcomeMessage;
     }
   }
-  files = (await Promise.all(files.map(addFileInfoToPath)))
-    .map(encodeURL)
-    .map(addRelativeStartPath);
+
+  files = sortByTitleId(
+    (await Promise.all(files.map(addFileInfoToPath)))
+      .map(encodeURL)
+      .map(addRelativeStartPath)
+  );
 
   directories = directories
     .map((file) => {
@@ -54,8 +69,16 @@ export default async () => {
       return file.url;
     });
 
+  // Merge titledb: template entries are the base, server-side overrides take priority
+  const titledb = Object.assign(
+    {},
+    jsonTemplate.titledb ?? {},
+    getTitledbOverrides()
+  );
+
   return Object.assign(jsonTemplate, {
     files,
     directories,
+    titledb,
   });
 };

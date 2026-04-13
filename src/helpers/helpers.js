@@ -8,6 +8,19 @@ import { dirname } from "path";
 import urlencode from "urlencode";
 import url from "url";
 
+/**
+ * Extracts the 16-character hex Title ID from a file path.
+ * e.g. "Game [010010401BC1A000][v0] (0.39 GB).nsz" → "010010401BC1A000"
+ * Returns null if no Title ID found.
+ * @param {string} filePath
+ * @returns {string|null}
+ */
+function extractTitleId(filePath) {
+  const filename = path.basename(filePath);
+  const match = filename.match(/\[([0-9A-Fa-f]{16})\]/);
+  return match ? match[1].toUpperCase() : null;
+}
+
 import { romsDirPath, jsonTemplatePath } from "./envs.js";
 
 const addRelativeStartPath = (path) => {
@@ -70,4 +83,5 @@ export {
   addRelativeStartPath,
   getJsonTemplateFile,
   fileDirName,
+  extractTitleId,
 };
