@@ -1,4 +1,4 @@
-FROM node:19-alpine3.16
+FROM node:22-alpine
 
 LABEL com.centurylinklabs.watchtower.enable=true
 ENV DEBUG=tinfoil*
@@ -16,7 +16,7 @@ RUN mkdir -p /games
 COPY package*.json /
 # Install the app dependencies
 WORKDIR /
-RUN npm install --production
+RUN npm install --omit=dev --ignore-scripts
 
 # Copy the application code
 COPY . /
